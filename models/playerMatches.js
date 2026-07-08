@@ -180,10 +180,11 @@ const PlayerMatchesRepo = (db) => ({
   },
   getPlayerWinstreak(profileId) {
     const rows = db.prepare(`
-        SELECT win
-        FROM player_matches
-        WHERE profile_id = ?
-        ORDER BY startgametime DESC
+        SELECT pm.win
+        FROM player_matches pm
+        JOIN matches m ON pm.match_id = m.match_id
+        WHERE pm.profile_id = ?
+        ORDER BY m.startgametime DESC
     `).all(profileId);
 
     let streak = 0;
