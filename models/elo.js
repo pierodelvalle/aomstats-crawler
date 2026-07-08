@@ -1,4 +1,4 @@
-const { ELO_DEFAULT } = require("../config/eloConfig");
+const { ELO_DEFAULT, MIN_COUNT_FOR_PUBLIC_ELO} = require("../config/eloConfig");
 
 const SCOPE = {
   GLOBAL: "global",
@@ -23,7 +23,6 @@ const EloRepo = (db) => ({
   },
 
   getAllElo(profileId) {
-    // returns elo values with more than 15 games
     return db.prepare(`
         SELECT
             pe.scope_type,
@@ -37,7 +36,7 @@ const EloRepo = (db) => ({
             FROM player_elo_history peh
             WHERE peh.profile_id = pe.profile_id AND pe.scope_key = peh.scope_key
             GROUP BY peh.profile_id
-            HAVING COUNT(*) > 9
+            HAVING COUNT(*) > ${MIN_COUNT_FOR_PUBLIC_ELO}
         )
         ORDER BY pe.elo DESC, pe.scope_type, pe.scope_key;
     `).all(profileId);
@@ -175,7 +174,7 @@ const EloRepo = (db) => ({
                       WHERE pm.profile_id = e.profile_id
                         AND pm.god = e.scope_key
                       GROUP BY pm.profile_id, pm.god
-                      HAVING COUNT(*) >= 9)
+                      HAVING COUNT(*) >= ${MIN_COUNT_FOR_PUBLIC_ELO})
         ORDER BY e.profile_id,
                  m.startgametime;
     `).all(profile_id, after);
