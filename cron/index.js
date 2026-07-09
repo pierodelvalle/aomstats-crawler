@@ -58,7 +58,7 @@ function cleanupOldBackups(backupDir) {
 
 cron.schedule('0 9 * * *', async () => { // runs at 5 am EST
   try {
-    await crawlFromAPI();
+    await crawlFromAPI({ sendStreakMessage: true });
   } catch (err) {
     console.error('Error in cron job:', err);
     fs.appendFileSync('cron_errors.log', `[${new Date().toISOString()}] ${err.stack || err}\n`);

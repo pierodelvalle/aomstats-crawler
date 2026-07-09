@@ -195,6 +195,25 @@ const PlayerMatchesRepo = (db) => ({
 
     return streak;
   },
+  getStreakBreakers(profileId) {
+    const lastMatch = db.prepare(`
+        SELECT pm.match_id, pm.team
+        FROM player_matches pm
+        JOIN matches m ON pm.match_id = m.match_id
+        WHERE pm.profile_id = ?
+        ORDER BY m.startgametime DESC
+        LIMIT 1
+    `).get(profileId);
+
+    if (!lastMatch) return [];
+
+    return db.prepare(`
+        SELECT p.name
+        FROM player_matches pm
+        JOIN players p ON p.profile_id = pm.profile_id
+        WHERE pm.match_id = ? AND pm.team != ? AND pm.profile_id != ?
+    `).all(lastMatch.match_id, lastMatch.team, profileId).map(r => r.name);
+  },
   getTopUpsets(limit = 10, after = 0) {
     return db.prepare(`
         WITH team_elos AS (
