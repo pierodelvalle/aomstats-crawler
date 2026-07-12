@@ -1,7 +1,7 @@
 const { crawlFromAPI } = require('../services/aomstats');
 
 async function fetchLatest () {
-  await crawlFromAPI();
+  await crawlFromAPI({ sendStreakMessage: true });
 }
 
 fetchLatest();
