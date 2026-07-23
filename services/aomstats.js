@@ -19,7 +19,7 @@ const notifyStreaksEnded = async (brokenStreaks) => {
     const breakerList = breakers.length
       ? formatPlayerList(breakers.map(b => `**${b}**`))
       : "Alguien";
-    return `💔 ${breakerList} ${breakers.length === 1 ? 'acabó' : 'acabaron'} con la racha de ${streak} victorias de **${name}**'s ${streak}!`;
+    return `💔 ${breakerList} ${breakers.length === 1 ? 'acabó' : 'acabaron'} con la racha de ${streak} victorias de **${name}**!`;
   }).join("\n");
 
   if (!DISCORD_WEBHOOK_URL) {
