@@ -2,6 +2,9 @@ const { MatchesRepo } = require('../models/matches');
 const { PlayerMatchesRepo } = require("../models/playerMatches");
 const { PlayersRepo } = require("../models/players");
 const { db } = require("../database");
+const fs = require("fs");
+const path = require('path');
+
 
 const Matches = MatchesRepo(db);
 const Players = PlayersRepo(db);
@@ -47,6 +50,7 @@ const MatchService = {
                     startgametime: m.startgametime,
                     mapname: m.mapname,
                     duration: m.duration,
+                    replay_file: m.replay_file,
                     team_match_id: null,
                     team_god_match_id: null,
                 });
@@ -59,6 +63,8 @@ const MatchService = {
                 win: m.win ? 1 : 0,
                 team: m.team,
             })
+
+            console.log(`Added Match No. ${m.match_id} from Player No. ${m.profile_id}`);
         }
 
         const validMatches = [...matchMap.values()];
@@ -73,6 +79,8 @@ const MatchService = {
 
         Matches.insertMany(validMatches);
         PlayerMatches.insertMany(validPlayerMatches);
+
+        return validMatches;
     },
     computeTeamMatchIds(playerMatches) {
         let result = new Map();

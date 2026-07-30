@@ -8,6 +8,7 @@ services:
       - "3000:3000"
     volumes:
       - ./db.sqlite:/usr/src/app/db.sqlite
+      - ./replays:/usr/src/app/replays
       - ../aomstats-crawler-data/backups:/usr/src/app/backups
     env_file:
       - .env

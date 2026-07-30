@@ -4,6 +4,10 @@ const {MatchService} = require("./MatchService");
 const {EloService} = require("./EloService");
 const {PlayerMatchesService} = require("./PlayerMatchesService");
 const {DISCORD_WEBHOOK_URL} = require("../config");
+const path = require("path");
+const fs = require("fs");
+const { Readable } = require('stream');
+const { finished } = require('stream/promises');
 
 const MIN_STREAK = 3;
 
@@ -87,14 +91,45 @@ async function crawlFromAPI ({ sendStreakMessage =  false }) {
       if (!seen.has(key)) {
         seen.add(key);
         allMatches.push(m);
-        console.log(`Added Match No. ${m.match_id} from Player No. ${m.profile_id}`);
       }
     }
+    console.log(`Fetched ${matches.length} matches from Player No. ${p}`);
   }
 
   console.log(`Fetch complete. Inserting matches...`);
 
-  MatchService.storeMatches(allMatches);
+  const insertedMatches = MatchService.storeMatches(allMatches);
+
+  for (const m of insertedMatches) {
+    if (m.replay_file) {
+      const replayDir = path.join(__dirname, '..', '/replays');
+
+      if (!fs.existsSync(replayDir)) {
+        fs.mkdirSync(replayDir, { recursive: true });
+      }
+
+      const fileDir = path.join(replayDir, m.replay_file);
+
+      try {
+        const file = await fetch(`https://aomstats.io/static/replays/${m.replay_file}`);
+        if (!file.ok) {
+          throw new Error(`Failed to fetch replays from ${m.replay_file}`);
+        }
+
+        const fileStream = fs.createWriteStream(fileDir);
+        const webStream = Readable.fromWeb(file.body);
+
+        webStream.pipe(fileStream);
+        await finished(fileStream);
+
+        console.log(`${m.replay_file} has been saved!`);
+
+      } catch (e) {
+        console.log(`Couldn't save replay for ${m.match_id}. ${e.message}`);
+      }
+    }
+  }
+
   EloService.updateEloForMatches();
   EloService.updateEloForMatches({scopeType: "god"});
 

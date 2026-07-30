@@ -15,6 +15,7 @@ db.exec(`
         startgametime     INTEGER,
         mapname           TEXT,
         duration          INTEGER,
+        replay_file       TEXT,
         team_match_id     TEXT,
         team_god_match_id TEXT
     )
