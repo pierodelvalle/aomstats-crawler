@@ -13,3 +13,11 @@ services:
     env_file:
       - .env
     command: node app.js
+
+  replay-server:
+    build: ./replay-server
+    container_name: aomstats-replay-server
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./replays:/usr/src/app/replays:ro
