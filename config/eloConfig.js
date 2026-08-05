@@ -5,7 +5,7 @@ const WIN_PROB_SIZE_MULTIPLIER_BASE = 1.2;
 const ELO_BETA_FACTOR = 0;
 const ELO_SCALE = 20;
 const MATCH_COUNT_FACTOR = 12;
-const MIN_COUNT_FOR_PUBLIC_ELO = 10;
+const MIN_COUNT_FOR_PUBLIC_ELO = 4;
 
 module.exports = {
   ELO_DEFAULT,
