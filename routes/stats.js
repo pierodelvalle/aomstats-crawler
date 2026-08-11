@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { exportAsCSV } = require('../services/export_csv');
 const { MatchService } = require('../services/MatchService');
+const {EloService} = require("../services/EloService");
 
 router.get('/matchups', (req, res) => {
   const matchups = MatchService.getTopMatchups(20);
@@ -52,6 +53,12 @@ router.get('/matches.csv', (req, res) => {
   res.setHeader('Content-Type', 'text/csv');
   res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
   res.send(csv);
+});
+
+router.get('/leaderboard', (req, res) => {
+  const scope = req.query.scope ?? 'global';
+  const leaderboard = EloService.getLeaderboard({ scope });
+  res.json({ leaderboard });
 });
 
 module.exports = router;

@@ -159,6 +159,13 @@ const EloService = {
   },
   getEloHistory(profileId, after = 0) {
     return Elo.getEloHistory(profileId, after);
+  },
+  getLeaderboard({scope = 'global'} = {}) {
+    const leaderboard = Elo.getManyElo(scope);
+    return leaderboard.map(({ scope_key, ...rest }) => ({
+      ...rest,
+      ...(scope !== 'global' && { god: scope_key })
+    }));
   }
 };
 

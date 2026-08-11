@@ -50,27 +50,25 @@ const EloRepo = (db) => ({
     return this.getElo(profileId, SCOPE.GLOBAL, null);
   },
 
-  getManyElo(entries, scopeType) {
-    if (!entries.length) return [];
-
-    const placeholders = entries
-      .map(() => "(?, ?)")
-      .join(", ");
-
-    const values = entries.flatMap(entry => [
-      entry.profile_id,
-      entry.key,
-    ]);
-
+  getManyElo(scopeType) {
     return db.prepare(`
-    SELECT
-      profile_id,
-      scope_key,
-      elo
-    FROM player_elo
-    WHERE scope_type = ?
-      AND (profile_id, scope_key) IN (${placeholders})
-  `).all(scopeType, ...values);
+      SELECT
+        p.name,
+        p.profile_id,
+        pe.scope_key,
+        pe.elo
+      FROM player_elo pe
+        JOIN players p ON p.profile_id = pe.profile_id
+      WHERE pe.scope_type = ?
+        AND EXISTS (
+          SELECT 1
+          FROM player_elo_history peh
+          WHERE peh.profile_id = pe.profile_id AND pe.scope_key = peh.scope_key
+          GROUP BY peh.profile_id
+          HAVING COUNT(*) > ${MIN_COUNT_FOR_PUBLIC_ELO}
+      )
+      ORDER BY pe.elo DESC
+  `).all(scopeType);
   },
 
   upsertElo(profileId, scopeType, scopeKey, elo) {
@@ -174,7 +172,7 @@ const EloRepo = (db) => ({
                       WHERE pm.profile_id = e.profile_id
                         AND pm.god = e.scope_key
                       GROUP BY pm.profile_id, pm.god
-                      HAVING COUNT(*) >= ${MIN_COUNT_FOR_PUBLIC_ELO})
+                      HAVING COUNT(*) > ${MIN_COUNT_FOR_PUBLIC_ELO})
         ORDER BY e.profile_id,
                  m.startgametime;
     `).all(profile_id, after);
