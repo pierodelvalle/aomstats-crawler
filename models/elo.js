@@ -51,6 +51,17 @@ const EloRepo = (db) => ({
   },
 
   getManyElo(scopeType) {
+    const recentMatchesClause = scopeType === SCOPE.GOD
+      ? `AND EXISTS (
+            SELECT 1
+            FROM player_matches pm
+              JOIN matches m ON m.match_id = pm.match_id
+            WHERE pm.profile_id = pe.profile_id
+              AND pm.god = pe.scope_key
+              AND m.startgametime >= strftime('%s', 'now', '-2 months')
+          )`
+      : ``;
+
     return db.prepare(`
       SELECT
         p.name,
@@ -61,12 +72,13 @@ const EloRepo = (db) => ({
         JOIN players p ON p.profile_id = pe.profile_id
       WHERE pe.scope_type = ?
         AND EXISTS (
-          SELECT 1
-          FROM player_elo_history peh
-          WHERE peh.profile_id = pe.profile_id AND pe.scope_key = peh.scope_key
-          GROUP BY peh.profile_id
-          HAVING COUNT(*) > ${MIN_COUNT_FOR_PUBLIC_ELO}
-      )
+            SELECT 1
+            FROM player_elo_history peh
+            WHERE peh.profile_id = pe.profile_id AND pe.scope_key = peh.scope_key
+            GROUP BY peh.profile_id
+            HAVING COUNT(*) > ${MIN_COUNT_FOR_PUBLIC_ELO}
+          )
+          ${recentMatchesClause}
       ORDER BY pe.elo DESC
   `).all(scopeType);
   },
