@@ -57,7 +57,8 @@ router.get('/matches.csv', (req, res) => {
 
 router.get('/leaderboard', (req, res) => {
   const scope = req.query.scope ?? 'global';
-  const leaderboard = EloService.getLeaderboard({ scope });
+  const after = Number(req.query.after) || 0;
+  const leaderboard = EloService.getLeaderboard({ scope, after });
   res.json({ leaderboard });
 });
 

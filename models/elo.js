@@ -188,6 +188,21 @@ const EloRepo = (db) => ({
         ORDER BY e.profile_id,
                  m.startgametime;
     `).all(profile_id, after);
+  },
+
+  getScopeEloHistory(scopeType, after = 0) {
+    return db.prepare(`
+        SELECT e.profile_id,
+               e.scope_key,
+               e.new_elo,
+               m.startgametime
+        FROM player_elo_history e
+                 JOIN matches m
+                      ON e.match_id = m.match_id
+        WHERE e.scope_type = ?
+          AND m.startgametime > ?
+        ORDER BY m.startgametime;
+    `).all(scopeType, after);
   }
 });
 

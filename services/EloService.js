@@ -160,11 +160,20 @@ const EloService = {
   getEloHistory(profileId, after = 0) {
     return Elo.getEloHistory(profileId, after);
   },
-  getLeaderboard({scope = 'global'} = {}) {
+  getLeaderboard({scope = 'global', after = 0} = {}) {
     const leaderboard = Elo.getManyElo(scope);
+
+    const historyByPlayer = new Map();
+    for (const { profile_id, scope_key, new_elo, startgametime } of Elo.getScopeEloHistory(scope, after)) {
+      const key = `${profile_id}:${scope_key}`;
+      if (!historyByPlayer.has(key)) historyByPlayer.set(key, []);
+      historyByPlayer.get(key).push({ elo: new_elo, startgametime: startgametime * 1000 });
+    }
+
     return leaderboard.map(({ scope_key, ...rest }) => ({
       ...rest,
-      ...(scope !== 'global' && { god: scope_key })
+      ...(scope !== 'global' && { god: scope_key }),
+      history: historyByPlayer.get(`${rest.profile_id}:${scope_key}`) ?? [],
     }));
   }
 };
