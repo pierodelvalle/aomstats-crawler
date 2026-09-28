@@ -1,4 +1,4 @@
-const { ELO_DEFAULT, MIN_COUNT_FOR_PUBLIC_ELO} = require("../config/eloConfig");
+import { ELO_DEFAULT, MIN_COUNT_FOR_PUBLIC_ELO} from '../config/eloConfig.js';
 
 const SCOPE = {
   GLOBAL: "global",
@@ -206,7 +206,7 @@ const EloRepo = (db) => ({
   }
 });
 
-module.exports = {
+export {
   EloRepo,
   SCOPE,
 };

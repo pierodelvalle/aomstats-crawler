@@ -39,7 +39,7 @@ const buildMatchupIdFromTeams = (team1, team2, scope = "global") => {
   return sortedTeams.map(t => t.join(',')).join(' vs ')
 };
 
-module.exports = {
+export {
   buildMatchupIdFromTeams,
   MatchupIdError
 };

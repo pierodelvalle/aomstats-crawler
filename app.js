@@ -1,9 +1,14 @@
-const express = require('express');
+import express from 'express';
 const app = express();
-const cors = require('cors');
-const { PORT } = require('./config');
+import cors from 'cors';
+import { PORT } from './config/index.js';
 
-require('./cron'); // Start the cron job
+import './cron/index.js'; // Start the cron job
+import playersRouter from './routes/players.js';
+import discordRouter from './routes/discord.js';
+import matchupRouter from './routes/matchup.js';
+import statsRouter from './routes/stats.js';
+import adminRouter from './routes/admin.js';
 
 app.use(cors({
   origin: '*'
@@ -13,11 +18,11 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
 
 // Routes
-app.use('/', require('./routes/players'));
-app.use('/', require('./routes/discord'));
-app.use('/', require('./routes/matchup'));
-app.use('/', require('./routes/stats'));
-app.use('/', require('./routes/admin'));
+app.use('/', playersRouter);
+app.use('/', discordRouter);
+app.use('/', matchupRouter);
+app.use('/', statsRouter);
+app.use('/', adminRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

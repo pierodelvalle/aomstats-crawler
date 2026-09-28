@@ -1,7 +1,7 @@
-const Database = require('better-sqlite3');
+import Database from 'better-sqlite3';
 const db = new Database('./db.sqlite');
 
-const PLAYERS = require('../players.js');
+import PLAYERS from '../players.js';
 
 for (let player of PLAYERS) {
   db.prepare(`

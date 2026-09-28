@@ -1,10 +1,9 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+import Database from 'better-sqlite3';
+import path from 'path';
+import '../database/index.js';
 
-const dbPath = path.resolve(__dirname, '..', 'db.sqlite');
+const dbPath = path.resolve(import.meta.dirname, '..', 'db.sqlite');
 const db = new Database(dbPath);
-
-require('../database');
 
 db.exec(`DELETE FROM player_elo_meta`);
 

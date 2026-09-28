@@ -1,5 +1,5 @@
 # Use official Node.js LTS image
-FROM node:18-alpine
+FROM node:24-alpine
 
 # Set working directory
 WORKDIR /usr/src/app
@@ -7,8 +7,10 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies. Scripts are skipped because better-sqlite3 ships
+# prebuilt binaries; without this npm tries to compile it with node-gyp
+# (no Python/compiler in the alpine image).
+RUN npm ci --ignore-scripts
 
 # Copy the rest of the app
 COPY . .

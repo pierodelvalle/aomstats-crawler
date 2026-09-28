@@ -1,14 +1,14 @@
-const {
+import {
   WIN_PROB_SIZE_MULTIPLIER_BASE,
-} = require('../config/eloConfig');
+} from '../config/eloConfig.js';
 
-const { PlayerMatchesRepo } = require("../models/playerMatches");
-const { db } = require("../database");
+import { PlayerMatchesRepo } from '../models/playerMatches.js';
+import { db } from '../database/index.js';
 
 const PlayerMatches = PlayerMatchesRepo(db);
 
-const { buildMatchupIdFromTeams } = require('../utils/buildMatchupId');
-const { EloService } = require("./EloService");
+import { buildMatchupIdFromTeams } from '../utils/buildMatchupId.js';
+import { EloService } from './EloService.js';
 
 const MatchupService = {
   getMatchupScore(team1, team2) {
@@ -100,6 +100,6 @@ const MatchupService = {
   }
 }
 
-module.exports = {
+export {
   MatchupService,
 };

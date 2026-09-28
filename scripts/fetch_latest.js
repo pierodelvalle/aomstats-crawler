@@ -1,4 +1,4 @@
-const { crawlFromAPI } = require('../services/aomstats');
+import { crawlFromAPI } from '../services/aomstats.js';
 
 async function fetchLatest () {
   await crawlFromAPI({ sendStreakMessage: true });

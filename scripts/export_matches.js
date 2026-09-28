@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { exportAsCSV } = require('../services/export_csv');
+import fs from 'fs';
+import { exportAsCSV } from '../services/export_csv.js';
 
 const result = exportAsCSV();
 

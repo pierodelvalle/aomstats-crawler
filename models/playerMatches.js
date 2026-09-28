@@ -392,6 +392,6 @@ const PlayerMatchesRepo = (db) => ({
   },
 });
 
-module.exports = {
+export {
   PlayerMatchesRepo,
 };

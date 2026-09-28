@@ -1,9 +1,9 @@
-const { MatchesRepo } = require('../models/matches');
-const { PlayerMatchesRepo } = require("../models/playerMatches");
-const { PlayersRepo } = require("../models/players");
-const { db } = require("../database");
-const fs = require("fs");
-const path = require('path');
+import { MatchesRepo } from '../models/matches.js';
+import { PlayerMatchesRepo } from '../models/playerMatches.js';
+import { PlayersRepo } from '../models/players.js';
+import { db } from '../database/index.js';
+import fs from 'fs';
+import path from 'path';
 
 
 const Matches = MatchesRepo(db);
@@ -179,6 +179,6 @@ const MatchService = {
     },
 }
 
-module.exports = {
+export {
     MatchService,
-}
+};

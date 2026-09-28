@@ -1,16 +1,16 @@
-const { EloRepo, SCOPE } = require('../models/elo');
-const { PlayerMatchesRepo } = require("../models/playerMatches");
-const { db } = require("../database");
+import { EloRepo, SCOPE } from '../models/elo.js';
+import { PlayerMatchesRepo } from '../models/playerMatches.js';
+import { db } from '../database/index.js';
 
 const Elo = EloRepo(db);
 const PlayerMatches = PlayerMatchesRepo(db);
 
-const {
+import {
   ELO_BETA_FACTOR,
   ELO_SCALE,
   ELO_K_FACTOR,
   MATCH_COUNT_FACTOR
-} = require('../config/eloConfig');
+} from '../config/eloConfig.js';
 
 function isValidMatch(team1, team2) {
   const t1Size = team1.length;
@@ -178,6 +178,6 @@ const EloService = {
   }
 };
 
-module.exports = {
+export {
   EloService,
 };

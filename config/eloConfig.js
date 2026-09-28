@@ -7,7 +7,7 @@ const ELO_SCALE = 20;
 const MATCH_COUNT_FACTOR = 12;
 const MIN_COUNT_FOR_PUBLIC_ELO = 4;
 
-module.exports = {
+export {
   ELO_DEFAULT,
   ELO_SIZE_ADVANTAGE_PER_PLAYER,
   ELO_K_FACTOR,

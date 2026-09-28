@@ -1,5 +1,5 @@
-const { PlayerMatchesRepo } = require("../models/playerMatches");
-const { db } = require("../database");
+import { PlayerMatchesRepo } from '../models/playerMatches.js';
+import { db } from '../database/index.js';
 
 const PlayerMatches = PlayerMatchesRepo(db);
 
@@ -48,6 +48,6 @@ const PlayerMatchesService = {
   }
 }
 
-module.exports = {
+export {
   PlayerMatchesService,
 };

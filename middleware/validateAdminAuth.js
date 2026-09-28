@@ -1,4 +1,4 @@
-const { ADMIN_PASSWORD } = require('../config');
+import { ADMIN_PASSWORD } from '../config/index.js';
 
 // Middleware to validate the fixed admin password sent as a bearer token
 const validateAdminAuth = (req, res, next) => {
@@ -14,4 +14,4 @@ const validateAdminAuth = (req, res, next) => {
   next();
 };
 
-module.exports = validateAdminAuth;
+export default validateAdminAuth;

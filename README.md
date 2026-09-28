@@ -12,7 +12,7 @@ The Express server exposes endpoints to get god winrates, partner/rival stats, m
 
 ## Requirements
 
-- Node.js 18+ (fetch API used)
+- Node.js 22+ (24 LTS recommended; ES modules, `import.meta.dirname`)
 - npm
 - SQLite (bundled via `better-sqlite3` dependency)
 
@@ -281,4 +281,4 @@ Many-to-many join between tournaments and matches.
 
 ## Cron job
 
-A cron job scheduled in `cron.js` runs daily at 09:00 server time (`0 9 * * *`). It fetches recent matches for all players in `players.js`, deduplicates them, inserts new matches into the DB, and computes `team_match_id` values.
+A cron job scheduled in `cron/index.js` runs daily at 09:00 server time (`0 9 * * *`). It fetches recent matches for all players in `players.js`, deduplicates them, inserts new matches into the DB, and computes `team_match_id` values.

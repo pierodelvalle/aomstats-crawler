@@ -58,6 +58,6 @@ const MatchesRepo = (db) => ({
   },
 });
 
-module.exports = {
+export {
   MatchesRepo,
 };

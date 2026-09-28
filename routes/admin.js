@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const validateAdminAuth = require('../middleware/validateAdminAuth');
-const { ADMIN_PASSWORD } = require('../config');
-const { PlayersRepo } = require('../models/players');
-const { MatchService } = require('../services/MatchService');
-const { EloService } = require('../services/EloService');
-const { db } = require('../database');
+import validateAdminAuth from '../middleware/validateAdminAuth.js';
+import { ADMIN_PASSWORD } from '../config/index.js';
+import { PlayersRepo } from '../models/players.js';
+import { MatchService } from '../services/MatchService.js';
+import { EloService } from '../services/EloService.js';
+import { db } from '../database/index.js';
 
 const Players = PlayersRepo(db);
 
@@ -107,4 +107,4 @@ router.post('/admin/matches', validateAdminAuth, (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

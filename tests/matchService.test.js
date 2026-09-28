@@ -1,25 +1,27 @@
-jest.mock("../database", () => ({
+import { jest } from '@jest/globals';
+
+jest.unstable_mockModule('../database/index.js', () => ({
   db: {
     prepare: jest.fn(),
     transaction: jest.fn(),
   },
 }));
 
-jest.mock('../models/matches', () => ({
+jest.unstable_mockModule('../models/matches.js', () => ({
   MatchesRepo: jest.fn(),
 }));
 
-jest.mock('../models/playerMatches', () => ({
+jest.unstable_mockModule('../models/playerMatches.js', () => ({
   PlayerMatchesRepo: jest.fn(),
 }));
 
-jest.mock('../models/players', () => ({
+jest.unstable_mockModule('../models/players.js', () => ({
   PlayersRepo: jest.fn(),
 }));
 
-const { MatchesRepo } = require('../models/matches');
-const { PlayerMatchesRepo } = require('../models/playerMatches');
-const { PlayersRepo } = require('../models/players');
+const { MatchesRepo } = await import('../models/matches.js');
+const { PlayerMatchesRepo } = await import('../models/playerMatches.js');
+const { PlayersRepo } = await import('../models/players.js');
 
 const mockMatchesInsertMany = jest.fn();
 const mockPlayerMatchesInsertMany = jest.fn();
@@ -37,7 +39,7 @@ PlayersRepo.mockReturnValue({
   getAll: mockPlayersGetAll,
 });
 
-const { MatchService } = require('../services/matchService');
+const { MatchService } = await import('../services/MatchService.js');
 
 describe('MatchService', () => {
   beforeEach(() => {

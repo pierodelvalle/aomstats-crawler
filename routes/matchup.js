@@ -1,5 +1,5 @@
-const express = require('express');
-const {MatchupService} = require("../services/MatchupService");
+import express from 'express';
+import {MatchupService} from '../services/MatchupService.js';
 const router = express.Router();
 
 router.post('/matchup', async (req, res) => {
@@ -41,4 +41,4 @@ router.post('/matchup', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

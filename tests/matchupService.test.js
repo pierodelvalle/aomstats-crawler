@@ -1,11 +1,13 @@
-jest.mock("../database", () => ({
+import { jest } from '@jest/globals';
+
+jest.unstable_mockModule('../database/index.js', () => ({
   db: {
     prepare: jest.fn(),
     transaction: jest.fn(),
   },
 }));
 
-jest.mock('../models/playerMatches', () => {
+jest.unstable_mockModule('../models/playerMatches.js', () => {
   const mockPlayerMatchesRepo = {
     getPlayerWins: jest.fn(),
     getPlayerRelationshipWins: jest.fn(),
@@ -16,7 +18,7 @@ jest.mock('../models/playerMatches', () => {
   };
 });
 
-jest.mock('../models/elo', () => {
+jest.unstable_mockModule('../models/elo.js', () => {
   const mockEloRepo = {
     getElo: jest.fn(),
     getManyElo: jest.fn(),
@@ -28,18 +30,20 @@ jest.mock('../models/elo', () => {
   };
 });
 
-jest.mock('../config/eloConfig', () => ({
+jest.unstable_mockModule('../config/eloConfig.js', () => ({
   ELO_SIZE_ADVANTAGE_PER_PLAYER: 250,
   WIN_PROB_SIZE_MULTIPLIER_BASE: 1.2,
   ELO_DIVISOR: 400,
   ELO_BETA_FACTOR: 0,
   ELO_SCALE: 20,
+  ELO_K_FACTOR: 6,
+  MATCH_COUNT_FACTOR: 12,
 }));
 
-const { PlayerMatchesRepo } = require('../models/playerMatches');
-const { EloRepo } = require('../models/elo');
+const { PlayerMatchesRepo } = await import('../models/playerMatches.js');
+const { EloRepo } = await import('../models/elo.js');
 
-const { MatchupService } = require('../services/MatchupService');
+const { MatchupService } = await import('../services/MatchupService.js');
 
 describe('MatchupService.getMatchupScore', () => {
   beforeEach(() => {

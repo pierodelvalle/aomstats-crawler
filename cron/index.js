@@ -1,13 +1,13 @@
-const cron = require('node-cron');
-const fs = require('fs');
-const path = require('path');
-const { crawlFromAPI } = require('../services/aomstats');
+import cron from 'node-cron';
+import fs from 'fs';
+import path from 'path';
+import { crawlFromAPI } from '../services/aomstats.js';
 
 // Database backup cron job - runs weekly on Sunday at 9:30 AM (Server Time)
 cron.schedule('30 9 * * 0', () => {
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-    const backupDir = path.join(__dirname, '..', 'backups');
+    const backupDir = path.join(import.meta.dirname, '..', 'backups');
 
     // Create backups directory if it doesn't exist
     if (!fs.existsSync(backupDir)) {
@@ -15,7 +15,7 @@ cron.schedule('30 9 * * 0', () => {
     }
 
     const backupPath = path.join(backupDir, `db-backup-${timestamp}.sqlite`);
-    const dbPath = path.join(__dirname, '..', 'db.sqlite');
+    const dbPath = path.join(import.meta.dirname, '..', 'db.sqlite');
 
     // Copy the database file
     fs.copyFileSync(dbPath, backupPath);
@@ -65,4 +65,4 @@ cron.schedule('0 9 * * *', async () => { // runs at 5 am EST
   }
 });
 
-module.exports = {};
+export {};

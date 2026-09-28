@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const { PlayerMatchesService } = require("../services/PlayerMatchesService");
-const { EloService } = require("../services/EloService");
+import { PlayerMatchesService } from '../services/PlayerMatchesService.js';
+import { EloService } from '../services/EloService.js';
 
 router.get('/gods/:profile_id', (req, res) => {
   const after = req.query.after ?? 0;
@@ -169,4 +169,4 @@ router.get('/elo-history/:profile_id', (req, res) => {
   })
 });
 
-module.exports = router;
+export default router;

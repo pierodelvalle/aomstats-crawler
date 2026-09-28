@@ -1,13 +1,13 @@
-const axios = require("axios");
-const {PlayerService} = require("./PlayerService");
-const {MatchService} = require("./MatchService");
-const {EloService} = require("./EloService");
-const {PlayerMatchesService} = require("./PlayerMatchesService");
-const {DISCORD_WEBHOOK_URL} = require("../config");
-const path = require("path");
-const fs = require("fs");
-const { Readable } = require('stream');
-const { finished } = require('stream/promises');
+import axios from 'axios';
+import {PlayerService} from './PlayerService.js';
+import {MatchService} from './MatchService.js';
+import {EloService} from './EloService.js';
+import {PlayerMatchesService} from './PlayerMatchesService.js';
+import {DISCORD_WEBHOOK_URL} from '../config/index.js';
+import path from 'path';
+import fs from 'fs';
+import { Readable } from 'stream';
+import { finished } from 'stream/promises';
 
 const MIN_STREAK = 3;
 
@@ -102,7 +102,7 @@ async function crawlFromAPI ({ sendStreakMessage =  false }) {
 
   for (const m of insertedMatches) {
     if (m.replay_file) {
-      const replayDir = path.join(__dirname, '..', '/replays');
+      const replayDir = path.join(import.meta.dirname, '..', '/replays');
 
       if (!fs.existsSync(replayDir)) {
         fs.mkdirSync(replayDir, { recursive: true });
@@ -149,7 +149,7 @@ async function crawlFromAPI ({ sendStreakMessage =  false }) {
   console.log(`Fetched and saved ${allMatches.length} matches`);
 }
 
-module.exports = {
+export {
   crawlPlayerMatches,
   crawlFromAPI,
 };

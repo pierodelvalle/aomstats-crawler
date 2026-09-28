@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { exportAsCSV } = require('../services/export_csv');
-const { MatchService } = require('../services/MatchService');
-const {EloService} = require("../services/EloService");
+import { exportAsCSV } from '../services/export_csv.js';
+import { MatchService } from '../services/MatchService.js';
+import {EloService} from '../services/EloService.js';
 
 router.get('/matchups', (req, res) => {
   const matchups = MatchService.getTopMatchups(20);
@@ -62,4 +62,4 @@ router.get('/leaderboard', (req, res) => {
   res.json({ leaderboard });
 });
 
-module.exports = router;
+export default router;

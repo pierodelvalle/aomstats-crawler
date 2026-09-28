@@ -6,4 +6,4 @@ const PLAYERS = {
   // { profile_id: 123, name: 'Jeff' },
 };
 
-module.exports = PLAYERS;
+export default PLAYERS;

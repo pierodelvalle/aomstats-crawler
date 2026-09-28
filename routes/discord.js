@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const axios = require('axios');
-const FormData = require('form-data');
-const validateApiKey = require('../middleware/validateApiKey');
-const { DISCORD_WEBHOOK_URL } = require('../config');
+import axios from 'axios';
+import FormData from 'form-data';
+import validateApiKey from '../middleware/validateApiKey.js';
+import { DISCORD_WEBHOOK_URL } from '../config/index.js';
 
 // Discord webhook endpoint
 router.post('/send-planner-to-discord', validateApiKey, async (req, res) => {
@@ -83,4 +83,4 @@ router.post('/send-planner-to-discord', validateApiKey, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

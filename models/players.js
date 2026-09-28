@@ -26,6 +26,6 @@ const PlayersRepo = (db) => ({
   },
 });
 
-module.exports = {
+export {
   PlayersRepo
 };

@@ -1,5 +1,5 @@
-const Database = require('better-sqlite3');
-const { ELO_DEFAULT } = require('../config/eloConfig');
+import Database from 'better-sqlite3';
+import { ELO_DEFAULT } from '../config/eloConfig.js';
 
 // Open or create DB
 const db = new Database('./db.sqlite');
@@ -102,6 +102,6 @@ db.exec(`
     )
 `)
 
-module.exports = {
+export {
   db,
 };

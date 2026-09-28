@@ -1,10 +1,10 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+import Database from 'better-sqlite3';
+import path from 'path';
 
-// Require database/index.js to ensure tables are created
-require('../database');
+// Import database/index.js to ensure tables are created
+import '../database/index.js';
 
-const dbPath = path.resolve(__dirname, '..', 'db.sqlite');
+const dbPath = path.resolve(import.meta.dirname, '..', 'db.sqlite');
 const db = new Database(dbPath);
 
 function createTournament(name) {

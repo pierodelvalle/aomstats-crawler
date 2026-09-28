@@ -1,4 +1,4 @@
-const { API_KEY } = require('../config');
+import { API_KEY } from '../config/index.js';
 
 // Middleware to validate API key
 const validateApiKey = (req, res, next) => {
@@ -14,4 +14,4 @@ const validateApiKey = (req, res, next) => {
   next();
 };
 
-module.exports = validateApiKey;
+export default validateApiKey;
