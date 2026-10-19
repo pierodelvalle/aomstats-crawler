@@ -29,6 +29,25 @@ db.exec(`
     )`
 );
 
+// Profile data refreshed from aomstats.io (services/ProfileService.js)
+const PLAYER_PROFILE_COLUMNS = {
+  alias: 'TEXT',
+  avatar_link: 'TEXT',
+  country: 'TEXT',
+  ranked_1v1: 'INTEGER',
+  ranked_1v1_peak: 'INTEGER',
+  ranked_team: 'INTEGER',
+  ranked_team_peak: 'INTEGER',
+  profile_updated: 'INTEGER',
+};
+
+const existingPlayerColumns = db.prepare('PRAGMA table_info(players)').all().map(c => c.name);
+for (const [column, type] of Object.entries(PLAYER_PROFILE_COLUMNS)) {
+  if (!existingPlayerColumns.includes(column)) {
+    db.exec(`ALTER TABLE players ADD COLUMN ${column} ${type}`);
+  }
+}
+
 db.exec(`
     CREATE TABLE IF NOT EXISTS player_matches
     (

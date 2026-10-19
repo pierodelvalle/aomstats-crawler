@@ -3,6 +3,11 @@ const router = express.Router();
 
 import { PlayerMatchesService } from '../services/PlayerMatchesService.js';
 import { EloService } from '../services/EloService.js';
+import { ProfileService } from '../services/ProfileService.js';
+
+router.get('/profiles', (req, res) => {
+  res.json({ profiles: ProfileService.getAllProfiles() });
+});
 
 router.get('/gods/:profile_id', (req, res) => {
   const after = req.query.after ?? 0;

@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import fs from 'fs';
 import path from 'path';
 import { crawlFromAPI } from '../services/aomstats.js';
+import { ProfileService } from '../services/ProfileService.js';
 
 // Database backup cron job - runs weekly on Sunday at 9:30 AM (Server Time)
 cron.schedule('30 9 * * 0', () => {
@@ -59,6 +60,7 @@ function cleanupOldBackups(backupDir) {
 cron.schedule('0 9 * * *', async () => { // runs at 5 am EST
   try {
     await crawlFromAPI({ sendStreakMessage: true });
+    await ProfileService.refreshProfiles();
   } catch (err) {
     console.error('Error in cron job:', err);
     fs.appendFileSync('cron_errors.log', `[${new Date().toISOString()}] ${err.stack || err}\n`);
