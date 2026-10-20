@@ -1,0 +1,110 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/jerkeeler/restoration/parser"
+)
+
+const replaysDir = "/usr/src/app/replays"
+
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", handleHealth)
+	mux.HandleFunc("POST /parse", handleParseUpload)
+	mux.HandleFunc("GET /replays/{filename}", handleParseSaved)
+
+	addr := ":8080"
+	log.Printf("replay-server listening on %s", addr)
+	if err := http.ListenAndServe(addr, mux); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("ok"))
+}
+
+// parseOptions maps ?pretty=true&slim=true&stats=true onto restoration's parser flags.
+func parseOptions(r *http.Request) (pretty, slim, stats bool) {
+	q := r.URL.Query()
+	pretty = q.Get("pretty") == "true"
+	slim = q.Get("slim") == "true"
+	stats = q.Get("stats") == "true"
+	return
+}
+
+// handleParseSaved parses a .mythrec(.gz) file that already lives in the mounted replays directory.
+func handleParseSaved(w http.ResponseWriter, r *http.Request) {
+	filename := r.PathValue("filename")
+	if filename == "" || strings.ContainsAny(filename, "/\\") || strings.Contains(filename, "..") {
+		http.Error(w, "invalid filename", http.StatusBadRequest)
+		return
+	}
+
+	path := filepath.Join(replaysDir, filename)
+	if _, err := os.Stat(path); err != nil {
+		http.Error(w, "replay not found", http.StatusNotFound)
+		return
+	}
+
+	pretty, slim, stats := parseOptions(r)
+	isGzip := strings.HasSuffix(strings.ToLower(filename), ".gz")
+
+	jsonStr, err := parser.ParseToJson(path, pretty, slim, stats, isGzip)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to parse replay: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, jsonStr)
+}
+
+// handleParseUpload accepts a multipart-form upload (field name "replay") and returns its parsed JSON.
+func handleParseUpload(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(64 << 20); err != nil {
+		http.Error(w, fmt.Sprintf("invalid upload: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("replay")
+	if err != nil {
+		http.Error(w, "missing 'replay' file field", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	tmp, err := os.CreateTemp("", "upload-*.mythrec")
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	defer os.Remove(tmp.Name())
+	defer tmp.Close()
+
+	if _, err := io.Copy(tmp, file); err != nil {
+		http.Error(w, "failed to save upload", http.StatusInternalServerError)
+		return
+	}
+	tmp.Close()
+
+	pretty, slim, stats := parseOptions(r)
+	isGzip := strings.HasSuffix(strings.ToLower(header.Filename), ".gz")
+
+	jsonStr, err := parser.ParseToJson(tmp.Name(), pretty, slim, stats, isGzip)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("failed to parse replay: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, jsonStr)
+}
