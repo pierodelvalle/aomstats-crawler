@@ -7,6 +7,7 @@ const MatchesRepo = (db) => ({
         startgametime,
         mapname,
         duration,
+        replay_file,
         team_match_id,
         team_god_match_id
       )
@@ -16,6 +17,7 @@ const MatchesRepo = (db) => ({
         @startgametime,
         @mapname,
         @duration,
+        @replay_file,
         @team_match_id,
         @team_god_match_id
       )
@@ -24,6 +26,7 @@ const MatchesRepo = (db) => ({
     const tx = db.transaction((rows) => {
       for (const row of rows) {
         stmt.run({
+          replay_file: null,
           team_match_id: null,
           team_god_match_id: null,
           ...row,
@@ -32,6 +35,20 @@ const MatchesRepo = (db) => ({
     });
 
     tx(rows);
+  },
+  getByMapAndTime(mapname, from, to) {
+    return db.prepare(`
+      SELECT
+        m.match_id,
+        m.startgametime,
+        m.duration,
+        group_concat(pm.profile_id) AS profile_ids
+      FROM matches m
+      JOIN player_matches pm ON pm.match_id = m.match_id
+      WHERE m.mapname = ?
+        AND m.startgametime BETWEEN ? AND ?
+      GROUP BY m.match_id
+    `).all(mapname, from, to);
   },
   getTopMaps(limit = 10) {
     return db.prepare(`

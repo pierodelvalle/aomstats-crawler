@@ -4,11 +4,6 @@ FROM node:24-alpine
 # Set working directory
 WORKDIR /usr/src/app
 
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++
-
 # Copy package.json and package-lock.json
 COPY package*.json ./
 

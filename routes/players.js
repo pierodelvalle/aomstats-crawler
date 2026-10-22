@@ -4,9 +4,18 @@ const router = express.Router();
 import { PlayerMatchesService } from '../services/PlayerMatchesService.js';
 import { EloService } from '../services/EloService.js';
 import { ProfileService } from '../services/ProfileService.js';
+import { ReplayService } from '../services/ReplayService.js';
 
 router.get('/profiles', (req, res) => {
   res.json({ profiles: ProfileService.getAllProfiles() });
+});
+
+router.get('/replay-stats/:profile_id', (req, res) => {
+  const after = req.query.after ?? 0;
+  const god = req.query.god || null;
+  const profileId = parseInt(req.params.profile_id);
+
+  res.json(ReplayService.getPlayerReplayStats(profileId, { after, god }));
 });
 
 router.get('/gods/:profile_id', (req, res) => {

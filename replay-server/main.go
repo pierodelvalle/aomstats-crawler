@@ -12,7 +12,15 @@ import (
 	"github.com/jerkeeler/restoration/parser"
 )
 
-const replaysDir = "/usr/src/app/replays"
+// Defaults match the docker-compose mount; override to run outside Docker.
+var replaysDir = getEnv("REPLAYS_DIR", "/usr/src/app/replays")
+
+func getEnv(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
 
 func main() {
 	mux := http.NewServeMux()
@@ -20,7 +28,7 @@ func main() {
 	mux.HandleFunc("POST /parse", handleParseUpload)
 	mux.HandleFunc("GET /replays/{filename}", handleParseSaved)
 
-	addr := ":8080"
+	addr := ":" + getEnv("PORT", "8080")
 	log.Printf("replay-server listening on %s", addr)
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatal(err)

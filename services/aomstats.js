@@ -3,6 +3,7 @@ import {PlayerService} from './PlayerService.js';
 import {MatchService} from './MatchService.js';
 import {EloService} from './EloService.js';
 import {PlayerMatchesService} from './PlayerMatchesService.js';
+import {ReplayService} from './ReplayService.js';
 import {DISCORD_WEBHOOK_URL} from '../config/index.js';
 import path from 'path';
 import fs from 'fs';
@@ -129,6 +130,8 @@ async function crawlFromAPI ({ sendStreakMessage =  false }) {
       }
     }
   }
+
+  await ReplayService.processSavedReplays();
 
   EloService.updateEloForMatches();
   EloService.updateEloForMatches({scopeType: "god"});

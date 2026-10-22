@@ -1,23 +1,42 @@
-const { REPLAY_SERVER_URL } = require('../config');
-const fs = require("fs");
+// Stores player_match_stats from replays parsed by replay-server, e.g. to backfill from
+// players' local recordings. The replay files are left in place.
+//
+// Usage: node scripts/parse_replay.js <replay>... [--store]
+//   <replay> is a path to a .mythrec / .mythrec.gz file (uploaded to replay-server),
+//   or the filename of a replay already in replays/ (parsed in place by replay-server).
+//   Without --store it only reports which match each replay belongs to.
+import fs from 'fs';
+import path from 'path';
+import { ReplayService } from '../services/ReplayService.js';
 
-async function parseReplay(filename) {
-  const url = `${REPLAY_SERVER_URL}/replays/${encodeURIComponent(filename)}`;
-  const res = await fetch(url);
+const args = process.argv.slice(2);
+const storeIndex = args.indexOf('--store');
+const store = storeIndex >= 0 && Boolean(args.splice(storeIndex, 1));
+const replays = args;
 
-  if (!res.ok) {
-    throw new Error(`replay-server returned ${res.status}: ${await res.text()}`);
-  }
-
-  const replay = await res.json();
-  //console.log(JSON.stringify(replay, null, 2));
-  fs.writeFileSync(`${filename}.json`, JSON.stringify(replay, null, 2), 'utf-8');
-
+if (!replays.length) {
+  console.error('Usage: node scripts/parse_replay.js <replay>... [--store]');
+  process.exit(1);
 }
 
-const filename = process.argv[2] || '2026-07-25-41130246-rm_acropolis-abcdefghijk_gai-hethorner_had.mythrec.gz';
+for (const replay of replays) {
+  const isLocalFile = fs.existsSync(replay);
+  const name = path.basename(replay).replace(/.mythrec(.gz)?$/i, '');
 
-parseReplay(filename).catch((err) => {
-  console.error(err.message);
-  process.exit(1);
-});
+  try {
+    const parsed = isLocalFile
+      ? await ReplayService.parseReplayFile(replay)
+      : await ReplayService.parseSavedReplay(replay);
+    const summary = ReplayService.summarize(parsed);
+
+    const endedAt = isLocalFile ? Math.floor(fs.statSync(replay).mtimeMs / 1000) : null;
+    const matchId = ReplayService.getMatchIdFromFilename(replay)
+      ?? (endedAt ? ReplayService.findMatch(summary, endedAt) : null);
+
+    const stored = store && matchId ? `, stored ${ReplayService.storeReplayStats(matchId, summary)} players` : '';
+    console.log(`${name}: ${summary.mapname}, ${Math.round(summary.recording_secs / 60)} min, match ${matchId ?? 'not found'}${stored}`);
+  } catch (err) {
+    console.error(`${name}: ${err.message}`);
+    process.exitCode = 1;
+  }
+}
