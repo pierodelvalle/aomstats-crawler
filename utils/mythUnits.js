@@ -1,9 +1,9 @@
 // Trainable myth units per civilization, by in-game name.
 const MYTH_UNITS = {
-  Greeks: ['Centaur', 'Minotaur', 'Cyclops', 'Lykaon', 'Hydra', 'Manticore', 'Nemean Lion', 'Hamadryad', 'Medusa', 'Colossus', 'Chimera', 'Siren'],
+  Greeks: ['Centaur', 'Minotaur', 'Cyclops', 'Lykaon', 'Hydra', 'Manticore', 'Nemean Lion', 'Hamadryad', 'Medusa', 'Colossus', 'Chimera', 'Siren', 'Pegasus'],
   Egyptians: ['Sphinx', 'Wadjet', 'Anubite', 'Petsuchos', 'Scarab', 'Scorpion Man', 'Mummy', 'Avenger'],
   Norse: ['Valkyrie', 'Troll', 'Einheri', 'Draugr', 'Frost Giant', 'Battle Boar', 'Mountain Giant', 'Rock Giant', 'Fire Giant', 'Fenris Wolf Brood', 'Fafnir'],
-  Atlanteans: ['Promethean', 'Automaton', 'Behemoth', 'Satyr', 'Centimanus', 'Argus', 'Lampades'],
+  Atlanteans: ['Promethean', 'Automaton', 'Behemoth', 'Satyr', 'Centimanus', 'Argus', 'Lampades', 'Caladria', 'Stymphalian Bird', 'Dryad'],
   Chinese: ['Qilin', 'Yazi', 'Qiongqi', 'Taowu', 'Taotie', 'Baihu', 'Pixiu', 'Hundun'],
   Japanese: ['Kitsune', 'Kamaitachi', 'Wanyūdō', 'Jorogumo', 'Tengu', 'Raiju', 'Oni', 'Shinigami', 'Asura'],
   Aztecs: ['Centzon Totochtin', 'Maquizcoatl', 'Chaneque', 'Ayotochtli', 'Obsidian Butterfly', 'Tzitzimitl', 'Quinametzin', 'Ahuizotl', 'Tunkuluchu', 'Soul Guide'],
