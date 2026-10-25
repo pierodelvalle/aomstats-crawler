@@ -25,7 +25,6 @@ func getEnv(key, fallback string) string {
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handleHealth)
-	mux.HandleFunc("POST /parse", handleParseUpload)
 	mux.HandleFunc("GET /replays/{filename}", handleParseSaved)
 
 	addr := ":" + getEnv("PORT", "8080")
@@ -67,47 +66,6 @@ func handleParseSaved(w http.ResponseWriter, r *http.Request) {
 	isGzip := strings.HasSuffix(strings.ToLower(filename), ".gz")
 
 	jsonStr, err := parser.ParseToJson(path, pretty, slim, stats, isGzip)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("failed to parse replay: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	io.WriteString(w, jsonStr)
-}
-
-// handleParseUpload accepts a multipart-form upload (field name "replay") and returns its parsed JSON.
-func handleParseUpload(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseMultipartForm(64 << 20); err != nil {
-		http.Error(w, fmt.Sprintf("invalid upload: %v", err), http.StatusBadRequest)
-		return
-	}
-
-	file, header, err := r.FormFile("replay")
-	if err != nil {
-		http.Error(w, "missing 'replay' file field", http.StatusBadRequest)
-		return
-	}
-	defer file.Close()
-
-	tmp, err := os.CreateTemp("", "upload-*.mythrec")
-	if err != nil {
-		http.Error(w, "internal error", http.StatusInternalServerError)
-		return
-	}
-	defer os.Remove(tmp.Name())
-	defer tmp.Close()
-
-	if _, err := io.Copy(tmp, file); err != nil {
-		http.Error(w, "failed to save upload", http.StatusInternalServerError)
-		return
-	}
-	tmp.Close()
-
-	pretty, slim, stats := parseOptions(r)
-	isGzip := strings.HasSuffix(strings.ToLower(header.Filename), ".gz")
-
-	jsonStr, err := parser.ParseToJson(tmp.Name(), pretty, slim, stats, isGzip)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("failed to parse replay: %v", err), http.StatusInternalServerError)
 		return

@@ -41,20 +41,6 @@ const MatchesRepo = (db) => ({
       UPDATE matches SET replay_file = ? WHERE match_id = ?
     `).run(replayFile, matchId).changes > 0;
   },
-  getByMapAndTime(mapname, from, to) {
-    return db.prepare(`
-      SELECT
-        m.match_id,
-        m.startgametime,
-        m.duration,
-        group_concat(pm.profile_id) AS profile_ids
-      FROM matches m
-      JOIN player_matches pm ON pm.match_id = m.match_id
-      WHERE m.mapname = ?
-        AND m.startgametime BETWEEN ? AND ?
-      GROUP BY m.match_id
-    `).all(mapname, from, to);
-  },
   getTopMaps(limit = 10) {
     return db.prepare(`
       SELECT
