@@ -24,6 +24,7 @@ function sortTeams(team1, team2) {
 const MatchService = {
     storeMatches(matches) {
         const badMatchIds = new Set();
+        const crashedMatchIds = new Set();
         const players = Players.getAll();
         const playerIds = new Set(players.map(player => player.profile_id));
 
@@ -31,6 +32,10 @@ const MatchService = {
         for (const m of matches) {
             if (m.team > 1 || !playerIds.has(m.profile_id)) {
                 badMatchIds.add(m.match_id);
+            }
+            // a crashed game's replay is incomplete, so don't keep it
+            if (m.resulttype === 4) {
+                crashedMatchIds.add(m.match_id);
             }
         }
 
@@ -50,7 +55,7 @@ const MatchService = {
                     startgametime: m.startgametime,
                     mapname: m.mapname,
                     duration: m.duration,
-                    replay_file: m.replay_file,
+                    replay_file: crashedMatchIds.has(m.match_id) ? null : m.replay_file,
                     team_match_id: null,
                     team_god_match_id: null,
                 });

@@ -289,5 +289,50 @@ describe('MatchService', () => {
       expect(mockPlayerMatchesInsertMany).toHaveBeenCalledWith([]);
       expect(mockMatchesInsertMany).toHaveBeenCalledWith([]);
     });
+
+    it('drops the replay file of games where a player crashed', () => {
+      const base = {
+        match_id: 1,
+        description: 'RANKED',
+        duration: 1000,
+        startgametime: 1,
+        mapname: 'map',
+        replay_file: 'replay.mythrec.gz',
+      };
+      const matches = [
+        { ...base, profile_id: 10, god: 'Zeus', win: true, team: 0, resulttype: 1 },
+        { ...base, profile_id: 20, god: 'Ra', win: false, team: 1, resulttype: 4 },
+      ];
+
+      MatchService.storeMatches(matches);
+
+      expect(mockMatchesInsertMany).toHaveBeenCalledWith([
+        expect.objectContaining({ match_id: 1, replay_file: null }),
+      ]);
+    });
+
+    it('keeps the replay file of finished games', () => {
+      const matches = [
+        {
+          match_id: 1,
+          profile_id: 10,
+          god: 'Zeus',
+          win: true,
+          team: 0,
+          description: 'RANKED',
+          resulttype: 1,
+          duration: 1000,
+          startgametime: 1,
+          mapname: 'map',
+          replay_file: 'replay.mythrec.gz',
+        },
+      ];
+
+      MatchService.storeMatches(matches);
+
+      expect(mockMatchesInsertMany).toHaveBeenCalledWith([
+        expect.objectContaining({ match_id: 1, replay_file: 'replay.mythrec.gz' }),
+      ]);
+    });
   });
 });

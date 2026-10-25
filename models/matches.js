@@ -36,6 +36,11 @@ const MatchesRepo = (db) => ({
 
     tx(rows);
   },
+  setReplayFile(matchId, replayFile) {
+    return db.prepare(`
+      UPDATE matches SET replay_file = ? WHERE match_id = ?
+    `).run(replayFile, matchId).changes > 0;
+  },
   getByMapAndTime(mapname, from, to) {
     return db.prepare(`
       SELECT
