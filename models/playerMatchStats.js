@@ -70,14 +70,16 @@ const PlayerMatchStatsRepo = (db) => ({
         AND (@god IS NULL OR pm.god = @god)
     `).get({ profileId, after, god });
   },
-  // Most picked minor god for an age column (minor_classical, minor_heroic, minor_mythic).
-  getTopMinorGod(profileId, column, { after = 0, god = null } = {}) {
+  // Matches and wins per minor god the player picked for an age column
+  // (minor_classical, minor_heroic, minor_mythic), most picked first.
+  getMinorGodStats(profileId, column, { after = 0, god = null } = {}) {
     if (!MINOR_GOD_COLUMNS.has(column)) throw new Error(`Unknown column ${column}`);
 
     return db.prepare(`
       SELECT
         s.${column} AS name,
-        COUNT(*) AS count
+        COUNT(*) AS matches,
+        SUM(pm.win) AS wins
       FROM player_match_stats s
       JOIN matches m ON m.match_id = s.match_id
       JOIN player_matches pm ON pm.match_id = s.match_id AND pm.profile_id = s.profile_id
@@ -86,9 +88,8 @@ const PlayerMatchStatsRepo = (db) => ({
         AND (@god IS NULL OR pm.god = @god)
         AND s.${column} IS NOT NULL
       GROUP BY s.${column}
-      ORDER BY count DESC
-      LIMIT 1
-    `).get({ profileId, after, god }) ?? null;
+      ORDER BY matches DESC, s.${column}
+    `).all({ profileId, after, god });
   },
   // Sums the per-match { name, count } lists of a top_* column, e.g. the player's most trained units.
   getTopCounts(profileId, column, { after = 0, god = null, limit = 3 } = {}) {

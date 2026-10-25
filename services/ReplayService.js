@@ -82,7 +82,7 @@ const ReplayService = {
       myth_units: PlayerMatchStats.getTopCounts(profileId, 'top_myth_units', { ...filter, limit: 2 }),
       god_powers: PlayerMatchStats.getTopCounts(profileId, 'top_god_powers', { ...filter, limit: 2 }),
       minor_gods: Object.fromEntries(['classical', 'heroic', 'mythic'].map(age =>
-        [age, PlayerMatchStats.getTopMinorGod(profileId, `minor_${age}`, filter)])),
+        [age, PlayerMatchStats.getMinorGodStats(profileId, `minor_${age}`, filter)])),
     };
   },
 };
