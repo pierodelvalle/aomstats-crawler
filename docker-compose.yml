@@ -10,4 +10,15 @@ services:
       - ../aomstats-crawler-data/backups:/usr/src/app/backups
     env_file:
       - .env
+    environment:
+      - REPLAY_SERVER_URL=http://replay-server:8080
     command: node app.js
+
+  replay-server:
+    build: ./replay-server
+    container_name: aomstats-replay-server
+    # No auth on replay-server: only expose it on the host's loopback, for scripts run on the host.
+    ports:
+      - "127.0.0.1:8081:8080"
+    volumes:
+      - ./replays:/usr/src/app/replays:ro

@@ -7,6 +7,7 @@ const MatchesRepo = (db) => ({
         startgametime,
         mapname,
         duration,
+        replay_file,
         team_match_id,
         team_god_match_id
       )
@@ -16,6 +17,7 @@ const MatchesRepo = (db) => ({
         @startgametime,
         @mapname,
         @duration,
+        @replay_file,
         @team_match_id,
         @team_god_match_id
       )
@@ -24,6 +26,7 @@ const MatchesRepo = (db) => ({
     const tx = db.transaction((rows) => {
       for (const row of rows) {
         stmt.run({
+          replay_file: null,
           team_match_id: null,
           team_god_match_id: null,
           ...row,
@@ -32,6 +35,11 @@ const MatchesRepo = (db) => ({
     });
 
     tx(rows);
+  },
+  setReplayFile(matchId, replayFile) {
+    return db.prepare(`
+      UPDATE matches SET replay_file = ? WHERE match_id = ?
+    `).run(replayFile, matchId).changes > 0;
   },
   getTopMaps(limit = 10) {
     return db.prepare(`

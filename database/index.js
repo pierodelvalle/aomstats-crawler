@@ -29,6 +29,25 @@ db.exec(`
     )`
 );
 
+// Profile data refreshed from aomstats.io (services/ProfileService.js)
+const PLAYER_PROFILE_COLUMNS = {
+  alias: 'TEXT',
+  avatar_link: 'TEXT',
+  country: 'TEXT',
+  ranked_1v1: 'INTEGER',
+  ranked_1v1_peak: 'INTEGER',
+  ranked_team: 'INTEGER',
+  ranked_team_peak: 'INTEGER',
+  profile_updated: 'INTEGER',
+};
+
+const existingPlayerColumns = db.prepare('PRAGMA table_info(players)').all().map(c => c.name);
+for (const [column, type] of Object.entries(PLAYER_PROFILE_COLUMNS)) {
+  if (!existingPlayerColumns.includes(column)) {
+    db.exec(`ALTER TABLE players ADD COLUMN ${column} ${type}`);
+  }
+}
+
 db.exec(`
     CREATE TABLE IF NOT EXISTS player_matches
     (
@@ -40,6 +59,32 @@ db.exec(`
         PRIMARY KEY (match_id, profile_id),
         FOREIGN KEY (match_id) REFERENCES matches(match_id),
         FOREIGN KEY (profile_id) REFERENCES players(profile_id)
+    )
+`);
+
+// Per-player stats parsed from the match replay (services/ReplayService.js).
+// top_units / top_myth_units / top_buildings / top_god_powers are JSON arrays of { name, count }.
+db.exec(`
+    CREATE TABLE IF NOT EXISTS player_match_stats
+    (
+        match_id            INTEGER,
+        profile_id          INTEGER,
+        minor_classical     TEXT,
+        minor_heroic        TEXT,
+        minor_mythic        TEXT,
+        classical_secs      INTEGER,
+        heroic_secs         INTEGER,
+        mythic_secs         INTEGER,
+        eapm                INTEGER,
+        titan               INTEGER,
+        wonder              INTEGER,
+        top_units           TEXT,
+        top_myth_units      TEXT,
+        top_buildings       TEXT,
+        top_god_powers      TEXT,
+        build_number        INTEGER,
+        PRIMARY KEY (match_id, profile_id),
+        FOREIGN KEY (match_id, profile_id) REFERENCES player_matches(match_id, profile_id)
     )
 `);
 
