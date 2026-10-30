@@ -9,6 +9,7 @@ import discordRouter from './routes/discord.js';
 import matchupRouter from './routes/matchup.js';
 import statsRouter from './routes/stats.js';
 import adminRouter from './routes/admin.js';
+import quorumRouter from './routes/quorum.js';
 
 app.use(cors({
   origin: '*'
@@ -23,6 +24,7 @@ app.use('/', discordRouter);
 app.use('/', matchupRouter);
 app.use('/', statsRouter);
 app.use('/', adminRouter);
+app.use('/', quorumRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

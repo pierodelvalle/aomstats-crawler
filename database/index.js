@@ -147,6 +147,39 @@ db.exec(`
     )
 `)
 
+// "Habemus quorum" session requests: one per day, players mark the range they can play.
+// window_start / window_end and start_time / end_time are Unix seconds.
+db.exec(`
+    CREATE TABLE IF NOT EXISTS quorum_sessions
+    (
+        date         TEXT PRIMARY KEY,
+        window_start INTEGER NOT NULL,
+        window_end   INTEGER NOT NULL,
+        created_at   INTEGER NOT NULL
+    )
+`);
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS quorum_availability
+    (
+        date       TEXT,
+        profile_id INTEGER,
+        start_time INTEGER NOT NULL,
+        end_time   INTEGER NOT NULL,
+        any_time   INTEGER NOT NULL DEFAULT 0,
+        updated_at INTEGER NOT NULL,
+        PRIMARY KEY (date, profile_id),
+        FOREIGN KEY (date) REFERENCES quorum_sessions(date),
+        FOREIGN KEY (profile_id) REFERENCES players(profile_id)
+    )
+`);
+
+// any_time: the player is in for the day without a specific range (start/end span the whole window).
+const quorumAvailabilityColumns = db.prepare('PRAGMA table_info(quorum_availability)').all().map(c => c.name);
+if (!quorumAvailabilityColumns.includes('any_time')) {
+  db.exec('ALTER TABLE quorum_availability ADD COLUMN any_time INTEGER NOT NULL DEFAULT 0');
+}
+
 export {
   db,
 };

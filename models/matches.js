@@ -64,6 +64,19 @@ const MatchesRepo = (db) => ({
       LIMIT ?
     `).all(limit);
   },
+  getActivity(after = 0) {
+    return db.prepare(`
+      SELECT
+        m.match_id,
+        m.startgametime,
+        json_group_array(pm.profile_id) AS players
+      FROM matches m
+      JOIN player_matches pm ON pm.match_id = m.match_id
+      WHERE m.startgametime > ?
+      GROUP BY m.match_id
+      ORDER BY m.startgametime
+    `).all(after);
+  },
 });
 
 export {

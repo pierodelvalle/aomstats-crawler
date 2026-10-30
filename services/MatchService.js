@@ -172,6 +172,14 @@ const MatchService = {
         }));
     },
 
+    // Start time and player ids of every match, so the client can bucket them in its own timezone.
+    getActivity(after = 0) {
+        return Matches.getActivity(after).map(r => ({
+            ...r,
+            players: JSON.parse(r.players),
+        }));
+    },
+
     getMatchesByDuration({ limit = 5, team_games_only = true } = {}) {
         const { shortest, longest } = PlayerMatches.getMatchesByDuration(limit, team_games_only);
 

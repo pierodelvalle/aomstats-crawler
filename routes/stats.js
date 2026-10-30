@@ -43,6 +43,12 @@ router.get('/matches/duration', (req, res) => {
   res.json({ shortest, longest });
 });
 
+router.get('/activity', (req, res) => {
+  const after = Number(req.query.after) || 0;
+  const matches = MatchService.getActivity(after);
+  res.json({ matches });
+});
+
 router.get('/matches.csv', (req, res) => {
   const csv = exportAsCSV();
 
